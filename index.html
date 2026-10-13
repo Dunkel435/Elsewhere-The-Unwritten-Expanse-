@@ -1,1036 +1,863 @@
-
+HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080611">
-  <meta name="description" content="ELSEWHERE — The Unwritten Expanse. Enter a surreal universe of impossible architecture, hidden worlds, and creative experiments.">
-  <title>ELSEWHERE — The Unwritten Expanse</title>
-
-  <style>
-    :root {
-      --bg: #080611;
-      --purple: #a78bfa;
-      --cyan: #76e7ff;
-      --gold: #f5d49b;
-      --text: #f8f5ff;
-      --muted: #c0b8d6;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      min-height: 100%;
-      background: var(--bg);
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      overflow-x: hidden;
-      color: var(--text);
-      background: var(--bg);
-      font-family: Inter, system-ui, -apple-system, sans-serif;
-    }
-
-    button, a {
-      font: inherit;
-    }
-
-    button {
-      color: inherit;
-    }
-
-    button:focus-visible,
-    a:focus-visible {
-      outline: 2px solid var(--cyan);
-      outline-offset: 5px;
-    }
-
-    .scene {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      overflow: hidden;
-      background:
-        radial-gradient(ellipse at 50% 45%, #332050 0%, transparent 48%),
-        #080611;
-    }
-
-    .scene-image {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      opacity: 0;
-      transform: scale(1.035);
-      transition: opacity 0.8s ease, transform 8s linear;
-      will-change: opacity, transform;
-    }
-
-    .scene-image.visible {
-      opacity: 1;
-      transform: scale(1.09);
-    }
-
-    .scene::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        linear-gradient(180deg, rgba(5,4,14,.22), transparent 28%,
-          rgba(5,4,14,.08) 55%, rgba(5,4,14,.88)),
-        linear-gradient(90deg, rgba(5,4,14,.36), transparent 65%);
-    }
-
-    .scene.fallback {
-      background:
-        radial-gradient(circle at 50% 45%,
-          rgba(143,87,255,.42), transparent 17%),
-        radial-gradient(ellipse at 50% 50%,
-          #30204f 0%, #111027 40%, #080611 78%);
-    }
-
-    .topbar {
-      position: absolute;
-      z-index: 3;
-      top: 0;
-      left: 0;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 24px clamp(18px, 5vw, 68px);
-    }
-
-    .brand {
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .28em;
-    }
-
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      color: #e4d9ff;
-      font-size: 10px;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--cyan);
-      box-shadow: 0 0 12px var(--cyan);
-    }
-
-    .screen {
-      position: relative;
-      z-index: 2;
-      min-height: 100svh;
-      display: grid;
-      place-items: center;
-      padding: 100px 22px 80px;
-      text-align: center;
-    }
-
-    .intro {
-      width: min(780px, 100%);
-      animation: reveal 1.2s both;
-    }
-
-    .eyebrow {
-      margin: 0 0 23px;
-      color: var(--cyan);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .32em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(48px, 11vw, 112px);
-      line-height: .98;
-      font-weight: 500;
-      letter-spacing: .10em;
-      text-shadow: 0 0 42px rgba(178,131,255,.35);
-    }
-
-    .subtitle {
-      margin: 25px auto 0;
-      max-width: 550px;
-      color: #eee6ff;
-      font-size: clamp(15px, 2.5vw, 21px);
-      line-height: 1.7;
-    }
-
-    .description {
-      max-width: 440px;
-      margin: 18px auto 30px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.9;
-    }
-
-    .primary-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      min-height: 54px;
-      padding: 0 29px;
-      border: 1px solid rgba(211,191,255,.7);
-      border-radius: 2px;
-      background: rgba(92,65,142,.3);
-      color: white;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .18em;
-      cursor: pointer;
-      transition: background .25s, box-shadow .25s, transform .25s;
-    }
-
-    .primary-button:hover {
-      background: rgba(139,92,246,.42);
-      box-shadow: 0 0 34px rgba(167,139,250,.22);
-      transform: translateY(-2px);
-    }
-
-    .skip-button {
-      position: absolute;
-      z-index: 4;
-      right: clamp(18px, 5vw, 68px);
-      bottom: 28px;
-      padding: 10px 0;
-      border: 0;
-      background: transparent;
-      color: #ddd4f4;
-      font-size: 11px;
-      cursor: pointer;
-    }
-
-    .skip-button:hover {
-      color: white;
-    }
-
-    .bottom-note {
-      position: absolute;
-      bottom: 31px;
-      left: 22px;
-      color: #b7aaca;
-      font-size: 10px;
-      letter-spacing: .12em;
-    }
-
-    .nexus {
-      position: relative;
-      z-index: 2;
-      display: none;
-      min-height: 100svh;
-      padding: 125px clamp(20px, 6vw, 84px) 65px;
-      animation: reveal 1s both;
-    }
-
-    .nexus.active {
-      display: block;
-    }
-
-    .nexus-heading {
-      max-width: 680px;
-      margin: 0 auto 46px;
-      text-align: center;
-    }
-
-    .nexus-heading h2 {
-      margin: 0;
-      font-size: clamp(36px, 7vw, 70px);
-      font-weight: 500;
-      letter-spacing: .04em;
-    }
-
-    .nexus-heading p:last-child {
-      color: #d4c9e8;
-      line-height: 1.8;
-      font-size: 14px;
-    }
-
-    .destinations {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-      max-width: 1120px;
-      margin: 0 auto;
-    }
-
-    .destination {
-      position: relative;
-      min-height: 245px;
-      padding: 27px 24px;
-      overflow: hidden;
-      text-align: left;
-      border: 1px solid rgba(202,181,255,.25);
-      border-radius: 4px;
-      background: linear-gradient(145deg,
-        rgba(56,42,84,.77), rgba(11,9,26,.82));
-      cursor: pointer;
-      transition: transform .25s, border-color .25s,
-        background .25s;
-    }
-
-    .destination:hover {
-      transform: translateY(-5px);
-      border-color: rgba(118,231,255,.65);
-      background: linear-gradient(145deg,
-        rgba(75,51,112,.9), rgba(11,9,26,.9));
-    }
-
-    .destination .number {
-      color: var(--cyan);
-      font-size: 10px;
-      letter-spacing: .18em;
-    }
-
-    .destination h3 {
-      margin: 46px 0 12px;
-      font-size: 23px;
-      font-weight: 500;
-    }
-
-    .destination p {
-      color: #c9bfdc;
-      font-size: 12px;
-      line-height: 1.8;
-    }
-
-    .destination .arrow {
-      position: absolute;
-      right: 23px;
-      bottom: 22px;
-      color: var(--gold);
-      font-size: 21px;
-    }
-
-    .nexus-footer {
-      margin-top: 35px;
-      color: #a99cbe;
-      font-size: 11px;
-      text-align: center;
-    }
-
-    .tool-panel {
-      display: none;
-      max-width: 740px;
-      margin: 30px auto 0;
-      padding: 28px;
-      border: 1px solid rgba(202,181,255,.3);
-      background: rgba(9,7,22,.94);
-      border-radius: 4px;
-    }
-
-    .tool-panel.active {
-      display: block;
-      animation: reveal .4s both;
-    }
-
-    .tool-panel h3 {
-      margin-top: 0;
-      font-size: 26px;
-      font-weight: 500;
-    }
-
-    .tool-panel p {
-      color: #c9bfdc;
-      font-size: 13px;
-      line-height: 1.8;
-    }
-
-    .tool-panel input,
-    .tool-panel textarea,
-    .tool-panel select {
-      width: 100%;
-      margin: 7px 0 14px;
-      padding: 12px;
-      border: 1px solid #50416d;
-      border-radius: 3px;
-      background: #151125;
-      color: white;
-      font: inherit;
-    }
-
-    .tool-panel textarea {
-      min-height: 110px;
-      resize: vertical;
-    }
-
-    .tool-panel label {
-      color: #e8dfff;
-      font-size: 12px;
-    }
-
-    .swatches {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 9px;
-      margin: 20px 0;
-    }
-
-    .swatch {
-      height: 78px;
-      border-radius: 3px;
-      border: 1px solid rgba(255,255,255,.22);
-    }
-
-    .small-button {
-      margin: 5px 7px 5px 0;
-      padding: 11px 15px;
-      border: 1px solid #756297;
-      border-radius: 3px;
-      background: #241a39;
-      color: white;
-      cursor: pointer;
-    }
-
-    .small-button:hover {
-      background: #40305e;
-    }
-
-    .playground {
-      height: 220px;
-      margin: 20px 0;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      border: 1px solid #3b2c55;
-      background: radial-gradient(circle, #292047, #090713);
-    }
-
-    .shape {
-      width: 80px;
-      height: 80px;
-      background: linear-gradient(135deg, #8b5cf6, #67e8f9);
-      box-shadow: 0 0 45px rgba(139,92,246,.6);
-      transform: rotate(30deg);
-      transition: transform .2s, border-radius .2s, background .2s;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    @keyframes reveal {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 760px) {
-      .topbar {
-        padding: 20px;
-      }
-
-      .brand {
-        font-size: 10px;
-        letter-spacing: .19em;
-      }
-
-      .status {
-        font-size: 9px;
-        letter-spacing: .08em;
-      }
-
-      .screen {
-        padding-top: 110px;
-        padding-bottom: 90px;
-      }
-
-      .scene-image {
-        object-position: center;
-      }
-
-      .destinations {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-
-      .destination {
-        min-height: 185px;
-        padding: 22px;
-      }
-
-      .destination h3 {
-        margin-top: 26px;
-      }
-
-      .nexus {
-        padding: 110px 18px 45px;
-      }
-
-      .nexus-heading {
-        margin-bottom: 28px;
-      }
-
-      .bottom-note {
-        bottom: 18px;
-        font-size: 9px;
-      }
-
-      .skip-button {
-        bottom: 15px;
-      }
-
-      .tool-panel {
-        padding: 20px;
-      }
-
-      .swatches {
-        gap: 5px;
-      }
-
-      .swatch {
-        height: 58px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        scroll-behavior: auto !important;
-        animation-duration: .01ms !important;
-        transition-duration: .01ms !important;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090815">
+<title>ELSEWHERE — The Unwritten Expanse</title>
+
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #090815;
+  --panel: rgba(20,18,42,.92);
+  --text: #f6f3ff;
+  --muted: #b9b3d8;
+  --purple: #9b6dff;
+  --cyan: #67e8f9;
+  --border: rgba(190,164,255,.24);
+}
+* { box-sizing: border-box; }
+html { min-height: 100%; scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(ellipse at 18% 12%, rgba(100,55,190,.25), transparent 38%),
+    radial-gradient(ellipse at 82% 75%, rgba(26,174,202,.12), transparent 34%),
+    var(--bg);
+}
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible,
+textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; }
+
+#intro {
+  position: relative;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#introFrame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .64;
+}
+#intro::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,rgba(5,4,15,.35),rgba(5,4,15,.78));
+}
+.intro-content {
+  position: relative;
+  z-index: 1;
+  width: min(760px,100%);
+  text-align: center;
+}
+.eyebrow {
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: .24em;
+  font-size: .75rem;
+}
+h1 {
+  margin: 14px 0;
+  font-size: clamp(2.5rem,9vw,5.8rem);
+  line-height: .98;
+  letter-spacing: -.055em;
+}
+.subtitle {
+  max-width: 600px;
+  margin: 0 auto 28px;
+  color: #e0daf8;
+  font-size: clamp(1rem,2.5vw,1.2rem);
+  line-height: 1.7;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+.btn {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 12px 19px;
+  color: var(--text);
+  background: rgba(255,255,255,.06);
+  transition: transform .18s,border-color .18s;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(103,232,249,.65);
+}
+.btn.primary {
+  color: #090815;
+  font-weight: 750;
+  border-color: transparent;
+  background: linear-gradient(110deg,#b79aff,#67e8f9);
+}
+.btn.small { padding: 8px 13px; font-size: .9rem; }
+
+#nexus {
+  padding: 28px 18px 48px;
+  flex-direction: column;
+  align-items: center;
+}
+.topbar {
+  display: flex;
+  width: min(1080px,100%);
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.brand {
+  font-weight: 800;
+  letter-spacing: .13em;
+  font-size: .88rem;
+}
+.brand span { color: var(--cyan); }
+.nexus-content {
+  width: min(1080px,100%);
+  margin: auto;
+  padding-top: clamp(42px,9vh,95px);
+}
+.nexus-heading { max-width: 740px; margin-bottom: 30px; }
+h2 {
+  font-size: clamp(2rem,5vw,3.6rem);
+  letter-spacing: -.04em;
+  margin: 10px 0;
+}
+.muted { color: var(--muted); line-height: 1.65; }
+
+.destination-grid {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 16px;
+}
+.destination {
+  min-height: 220px;
+  text-align: left;
+  padding: 22px;
+  border-radius: 22px;
+  color: var(--text);
+  background: linear-gradient(145deg,rgba(47,35,83,.82),rgba(14,17,39,.9));
+  border: 1px solid var(--border);
+  box-shadow: 0 18px 60px rgba(0,0,0,.3);
+  transition: transform .2s,border-color .2s;
+}
+.destination:hover {
+  transform: translateY(-4px);
+  border-color: rgba(103,232,249,.65);
+}
+.destination .symbol {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 25px;
+}
+.destination strong {
+  display: block;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+.destination span:last-child {
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: .95rem;
+}
+
+.tool-screen {
+  padding: 22px 16px 44px;
+  flex-direction: column;
+  align-items: center;
+}
+.tool-wrap { width: min(900px,100%); }
+.tool-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 22px 0;
+}
+.tool-header h2 { font-size: clamp(1.9rem,6vw,3rem); }
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--panel);
+  padding: clamp(16px,4vw,26px);
+  box-shadow: 0 18px 60px rgba(0,0,0,.25);
+}
+.panel + .panel { margin-top: 16px; }
+.field {
+  display: grid;
+  gap: 8px;
+  margin: 17px 0;
+}
+.field label {
+  color: #e8e2ff;
+  font-size: .93rem;
+  font-weight: 650;
+}
+input[type="text"], textarea, select {
+  width: 100%;
+  min-width: 0;
+  color: var(--text);
+  background: #100e23;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+textarea { min-height: 130px; resize: vertical; }
+select { cursor: pointer; }
+input[type="range"] { width: 100%; accent-color: var(--purple); }
+input[type="color"] {
+  width: 54px;
+  height: 42px;
+  border: 0;
+  padding: 2px;
+  background: transparent;
+  cursor: pointer;
+}
+.palette {
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr));
+  gap: 10px;
+  margin: 22px 0;
+}
+.swatch {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #100e23;
+}
+.swatch-color { height: 94px; }
+.swatch-code {
+  padding: 10px 4px;
+  text-align: center;
+  font-size: .76rem;
+}
+.memory-list { display: grid; gap: 12px; margin-top: 18px; }
+.memory-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 15px;
+  background: rgba(255,255,255,.035);
+  overflow-wrap: anywhere;
+}
+.memory-card h3 { margin: 0 0 5px; }
+.memory-date { color: var(--cyan); font-size: .78rem; margin-bottom: 10px; }
+.memory-text { white-space: pre-wrap; line-height: 1.6; }
+.memory-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.message { min-height: 1.4em; color: var(--cyan); font-size: .9rem; }
+
+.experiment-layout {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+.preview {
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  position: relative;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: radial-gradient(circle at center,rgba(94,61,163,.28),transparent 58%),#0b0a19;
+}
+.preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .18;
+  background-image:
+    linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);
+  background-size: 25px 25px;
+}
+#shape {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg,#8b5cf6,#67e8f9);
+  box-shadow: 0 0 28px #8b5cf699;
+  transition: width .12s,height .12s,border-radius .12s,background .12s;
+}
+.footer-note {
+  text-align: center;
+  color: #827c9e;
+  font-size: .8rem;
+  margin-top: 35px;
+}
+@media(max-width:720px) {
+  .destination-grid { grid-template-columns: 1fr; }
+  .destination { min-height: 150px; }
+  .destination .symbol { margin-bottom: 12px; }
+  .experiment-layout { grid-template-columns: 1fr; }
+  .preview { min-height: 240px; }
+  .palette { gap: 5px; }
+  .swatch-color { height: 65px; }
+  .swatch-code { font-size: .66rem; }
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after { scroll-behavior: auto !important; transition: none !important; }
+}
+</style>
 </head>
 
 <body>
-  <div class="scene fallback" id="scene" aria-hidden="true">
-    <img class="scene-image" id="frameA" alt="">
-    <img class="scene-image" id="frameB" alt="">
-  </div>
+<main>
 
-  <header class="topbar">
-    <div class="brand">ELSEWHERE <span style="color:#a78bfa">/</span> THE UNWRITTEN EXPANSE</div>
-    <div class="status">
-      <span class="status-dot"></span>
-      <span id="statusText">Awaiting arrival</span>
+<section id="intro" class="screen active" aria-label="ELSEWHERE introduction">
+  <img id="introFrame" alt="" src="frame_001.jpg">
+  <div class="intro-content">
+    <div class="eyebrow">A world beyond the familiar</div>
+    <h1>ELSEWHERE</h1>
+    <p class="subtitle">The Unwritten Expanse. A living threshold to strange places, preserved memories, and experiments waiting to happen.</p>
+    <div class="actions">
+      <button class="btn primary" id="enterButton" type="button">Enter Elsewhere</button>
+      <button class="btn" id="skipButton" type="button">Skip intro</button>
     </div>
-  </header>
+    <p class="muted" id="introStatus" aria-live="polite">The expanse is opening…</p>
+  </div>
+</section>
 
-  <main>
-    <section class="screen" id="arrival">
-      <div class="intro">
-        <p class="eyebrow">A place outside reality</p>
-        <h1>ELSEWHERE</h1>
-        <p class="subtitle">Somewhere between what exists and what could exist.</p>
-        <p class="description">
-          You were not supposed to find this place.
-          Beyond the fracture, another universe is waiting
-          to be discovered.
-        </p>
-        <button class="primary-button" id="enterButton">
-          ENTER ELSEWHERE <span aria-hidden="true">↗</span>
-        </button>
+<section id="nexus" class="screen" aria-label="Nexus">
+  <div class="topbar">
+    <div class="brand">ELSEWHERE <span>✦</span></div>
+    <button class="btn small" id="replayIntro" type="button">Replay intro</button>
+  </div>
+  <div class="nexus-content">
+    <div class="nexus-heading">
+      <div class="eyebrow">The Nexus · Choose a path</div>
+      <h2>Where will you wander?</h2>
+      <p class="muted">Three doors are open. Grow a palette from the unknown, keep a fragment of a thought, or reshape an energy form.</p>
+    </div>
+    <div class="destination-grid">
+      <button class="destination" data-open="garden" type="button">
+        <span class="symbol">✧</span><strong>Living Garden</strong>
+        <span>Discover unexpected color palettes and carry their codes with you.</span>
+      </button>
+      <button class="destination" data-open="archive" type="button">
+        <span class="symbol">⌁</span><strong>Memory Archive</strong>
+        <span>Preserve notes with timestamps, edit them later, and export a backup.</span>
+      </button>
+      <button class="destination" data-open="experiment" type="button">
+        <span class="symbol">◇</span><strong>Experiment Chamber</strong>
+        <span>Change shapes, scale, rotation, roundness, and energy color.</span>
+      </button>
+    </div>
+  </div>
+  <p class="footer-note">ELSEWHERE — The Unwritten Expanse</p>
+</section>
+
+<section id="garden" class="screen tool-screen" aria-label="Living Garden">
+  <div class="tool-wrap">
+    <div class="topbar">
+      <div class="brand">ELSEWHERE <span>✦</span></div>
+      <button class="btn small backButton" type="button">← Nexus</button>
+    </div>
+    <div class="tool-header"><div><div class="eyebrow">Destination 01</div><h2>Living Garden</h2></div></div>
+    <div class="panel">
+      <p class="muted">Grow five colors from the expanse. Generate a new set whenever you need a fresh direction.</p>
+      <div id="palette" class="palette" aria-live="polite"></div>
+      <div class="actions" style="justify-content:flex-start">
+        <button class="btn primary" id="generatePalette" type="button">Grow new palette</button>
+        <button class="btn" id="copyPalette" type="button">Copy HEX codes</button>
       </div>
-      <div class="bottom-note">A NEW WORLD IS WAITING</div>
-      <button class="skip-button" id="skipButton">Skip intro ↗</button>
-    </section>
+      <p class="message" id="paletteMessage" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
 
-    <section class="nexus" id="nexus">
-      <div class="nexus-heading">
-        <p class="eyebrow">The first breach is open</p>
-        <h2>The Nexus</h2>
-        <p>
-          The universe remembers how to exist.
-          Choose a path, awaken a creation, and leave
-          something of yourself in the unknown.
-        </p>
-      </div>
-
-      <div class="destinations">
-        <button class="destination" data-destination="garden">
-          <span class="number">01 / CREATION</span>
-          <h3>The Living Garden</h3>
-          <p>Discover colors, create palettes, and shape
-            new visual worlds.</p>
-          <span class="arrow">↗</span>
-        </button>
-
-        <button class="destination" data-destination="archive">
-          <span class="number">02 / MEMORY</span>
-          <h3>The Memory Archive</h3>
-          <p>Preserve thoughts, record discoveries, and
-            collect fragments of your journey.</p>
-          <span class="arrow">↗</span>
-        </button>
-
-        <button class="destination" data-destination="chamber">
-          <span class="number">03 / EXPERIMENT</span>
-          <h3>The Experiment Chamber</h3>
-          <p>Manipulate shapes, color, rotation, and
-            motion in a creative playground.</p>
-          <span class="arrow">↗</span>
-        </button>
-      </div>
-
-      <section class="tool-panel" id="garden">
-        <h3>The Living Garden</h3>
-        <p>Generate a five-color palette and copy its HEX values.</p>
-        <div class="swatches" id="swatches"></div>
-        <button class="small-button" id="generatePalette">Grow new colors</button>
-        <button class="small-button" id="copyPalette">Copy HEX palette</button>
-        <p id="paletteMessage" aria-live="polite"></p>
-      </section>
-
-      <section class="tool-panel" id="archive">
-        <h3>The Memory Archive</h3>
-        <p>Your notes are stored in this browser on this device.</p>
-        <label for="memoryTitle">Memory title</label>
-        <input id="memoryTitle" maxlength="100" placeholder="A fragment worth keeping">
-        <label for="memoryText">Your memory</label>
-        <textarea id="memoryText" maxlength="5000" placeholder="Write what you discovered..."></textarea>
-        <button class="small-button" id="saveMemory">Preserve memory</button>
-        <button class="small-button" id="exportMemories">Export memories</button>
-        <div id="memoryList"></div>
-        <p id="memoryMessage" aria-live="polite"></p>
-      </section>
-
-      <section class="tool-panel" id="chamber">
-        <h3>The Experiment Chamber</h3>
-        <p>Change the geometry of a living digital object.</p>
-
-        <div class="playground">
-          <div class="shape" id="shape"></div>
+<section id="archive" class="screen tool-screen" aria-label="Memory Archive">
+  <div class="tool-wrap">
+    <div class="topbar">
+      <div class="brand">ELSEWHERE <span>✦</span></div>
+      <button class="btn small backButton" type="button">← Nexus</button>
+    </div>
+    <div class="tool-header"><div><div class="eyebrow">Destination 02</div><h2>Memory Archive</h2></div></div>
+    <div class="panel">
+      <p class="muted">Write a thought worth keeping. Each saved memory receives a date and time on this device.</p>
+      <form id="memoryForm">
+        <div class="field">
+          <label for="memoryTitle">Memory title</label>
+          <input id="memoryTitle" type="text" maxlength="120" placeholder="A name for this fragment">
         </div>
-
-        <label for="rotation">Rotation</label>
-        <input type="range" id="rotation" min="0" max="360" value="30">
-
-        <label for="shapeSize">Size</label>
-        <input type="range" id="shapeSize" min="35" max="150" value="80">
-
-        <label for="roundness">Roundness</label>
-        <input type="range" id="roundness" min="0" max="50" value="0">
-
-        <label for="shapeColor">Energy color</label>
-        <input type="color" id="shapeColor" value="#8b5cf6">
-
-        <button class="small-button" id="resetShape">Reset experiment</button>
-      </section>
-
-      <div class="nexus-footer">
-        <button class="small-button" id="returnNexus">Return to Nexus</button>
-        <p>ELSEWHERE — The Unwritten Expanse</p>
+        <div class="field">
+          <label for="memoryText">Your memory</label>
+          <textarea id="memoryText" required maxlength="20000" placeholder="Write what you want to preserve…"></textarea>
+        </div>
+        <div class="actions" style="justify-content:flex-start">
+          <button class="btn primary" id="saveMemory" type="submit">Preserve memory</button>
+          <button class="btn" id="cancelEdit" type="button" hidden>Cancel edit</button>
+          <button class="btn" id="exportMemories" type="button">Export JSON backup</button>
+          <button class="btn" id="importMemoriesButton" type="button">Restore JSON backup</button>
+          <input id="importMemoriesFile" type="file" accept="application/json,.json" hidden>
+        </div>
+      </form>
+      <p class="message" id="memoryMessage" aria-live="polite"></p>
+      <p class="muted" style="font-size:.84rem">Memories are stored in this browser on this device. Export a JSON backup before clearing browser data or changing devices.</p>
+    </div>
+    <div class="panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <h3 style="margin:0">Preserved fragments</h3>
+        <span class="muted" id="memoryCount">0 memories</span>
       </div>
-    </section>
-  </main>
+      <div id="memoryList" class="memory-list"></div>
+    </div>
+  </div>
+</section>
 
-  <script>
-    (() => {
-      "use strict";
+<section id="experiment" class="screen tool-screen" aria-label="Experiment Chamber">
+  <div class="tool-wrap">
+    <div class="topbar">
+      <div class="brand">ELSEWHERE <span>✦</span></div>
+      <button class="btn small backButton" type="button">← Nexus</button>
+    </div>
+    <div class="tool-header"><div><div class="eyebrow">Destination 03</div><h2>Experiment Chamber</h2></div></div>
+    <div class="panel experiment-layout">
+      <div class="preview" aria-label="Shape preview"><div id="shape"></div></div>
+      <div class="shape-controls">
+        <div class="field">
+          <label for="shapeType">Shape</label>
+          <select id="shapeType">
+            <option value="square">Square</option>
+            <option value="circle">Circle</option>
+            <option value="triangle">Triangle</option>
+            <option value="diamond">Diamond</option>
+            <option value="pentagon">Pentagon</option>
+            <option value="star">Star</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="rotation">Rotation: <span id="rotationValue">30°</span></label>
+          <input id="rotation" type="range" min="0" max="360" value="30">
+        </div>
+        <div class="field">
+          <label for="shapeSize">Size: <span id="sizeValue">80 px</span></label>
+          <input id="shapeSize" type="range" min="35" max="170" value="80">
+        </div>
+        <div class="field">
+          <label for="roundness">Square roundness: <span id="roundnessValue">0%</span></label>
+          <input id="roundness" type="range" min="0" max="50" value="0">
+        </div>
+        <div class="field">
+          <label for="shapeColor">Energy color</label>
+          <input id="shapeColor" type="color" value="#8b5cf6" aria-label="Energy color">
+        </div>
+        <div class="actions" style="justify-content:flex-start">
+          <button class="btn" id="resetShape" type="button">Reset experiment</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-      // All frames live beside index.html in the repository.
-      const TOTAL_FRAMES = 60;
-      const FRAME_PATH = "frame_";
-      const FRAME_EXT = ".jpg";
+</main>
 
-      const scene = document.getElementById("scene");
-      const frameA = document.getElementById("frameA");
-      const frameB = document.getElementById("frameB");
-      const arrival = document.getElementById("arrival");
-      const nexus = document.getElementById("nexus");
-      const statusText = document.getElementById("statusText");
-      const enterButton = document.getElementById("enterButton");
-      const skipButton = document.getElementById("skipButton");
+<script>
+(() => {
+"use strict";
 
-      const reduceMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-      ).matches;
+const $ = id => document.getElementById(id);
+const screenIds = ["intro","nexus","garden","archive","experiment"];
+let introTimer = null;
+let palette = [];
+let editingId = null;
+let memories = readMemories();
 
-      let currentFrame = 1;
-      let activeImage = frameA;
-      let animationTimer = null;
-      let entering = false;
+function showScreen(id) {
+  screenIds.forEach(name => $(name).classList.toggle("active", name === id));
+  window.scrollTo(0, 0);
+}
 
-      function frameName(number) {
-        return FRAME_PATH +
-          String(number).padStart(3, "0") +
-          FRAME_EXT;
-      }
+function enterNexus() {
+  if (introTimer !== null) {
+    clearInterval(introTimer);
+    introTimer = null;
+  }
+  showScreen("nexus");
+}
 
-      // Preload frames progressively to avoid downloading all images at once.
-      function preloadFrame(number) {
-        return new Promise((resolve) => {
-          const image = new Image();
-          image.onload = () => resolve(image);
-          image.onerror = () => resolve(null);
-          image.src = frameName(number);
-        });
-      }
+function playIntro() {
+  if (introTimer !== null) clearInterval(introTimer);
+  showScreen("intro");
 
-      async function prepareOpening() {
-        const first = await preloadFrame(1);
-        if (!first) return;
+  const img = $("introFrame");
+  img.style.display = "";
+  let frame = 1;
+  let ticks = 0;
 
-        frameA.src = first.src;
-        frameA.classList.add("visible");
-        scene.classList.remove("fallback");
+  img.onerror = () => {
+    img.onerror = null;
+    img.style.display = "none";
+  };
+  img.src = "frame_001.jpg";
+  $("introStatus").textContent = "The expanse is opening…";
 
-        // Load the next few frames in the background.
-        for (let i = 2; i <= 5; i++) {
-          preloadFrame(i);
-        }
-      }
+  introTimer = setInterval(() => {
+    ticks++;
+    frame = frame >= 60 ? 1 : frame + 1;
 
-      function showFrame(number) {
-        const next = activeImage === frameA ? frameB : frameA;
-        const url = frameName(number);
+    img.onerror = () => {
+      img.onerror = null;
+      img.style.display = "none";
+    };
+    img.src = "frame_" + String(frame).padStart(3, "0") + ".jpg";
 
-        next.onload = () => {
-          next.classList.add("visible");
-          activeImage.classList.remove("visible");
-          activeImage = next;
-        };
+    if (ticks >= 60) enterNexus();
+  }, 100);
+}
 
-        next.onerror = () => {
-          // A missing frame does not stop the cinematic sequence.
-          if (number < TOTAL_FRAMES) showFrame(number + 1);
-          else openNexus();
-        };
+$("enterButton").addEventListener("click", enterNexus);
+$("skipButton").addEventListener("click", enterNexus);
+$("replayIntro").addEventListener("click", playIntro);
 
-        next.src = url;
-      }
+document.querySelectorAll("[data-open]").forEach(button => {
+  button.addEventListener("click", () => showScreen(button.dataset.open));
+});
+document.querySelectorAll(".backButton").forEach(button => {
+  button.addEventListener("click", () => showScreen("nexus"));
+});
 
-      function stopAnimation() {
-        if (animationTimer) clearTimeout(animationTimer);
-        animationTimer = null;
-      }
+// LIVING GARDEN
+function randomHex() {
+  return "#" + Math.floor(Math.random() * 16777216).toString(16).padStart(6, "0");
+}
 
-      function openNexus() {
-        stopAnimation();
-        arrival.classList.add("hidden");
-        nexus.classList.add("active");
-        statusText.textContent = "Nexus awakened";
-        skipButton.classList.add("hidden");
-        window.scrollTo({ top: 0, behavior: "auto" });
-      }
+function growPalette() {
+  palette = Array.from({length: 5}, randomHex);
+  const container = $("palette");
+  container.replaceChildren();
 
-      function playOpening() {
-        if (entering) return;
-        entering = true;
-        stopAnimation();
+  palette.forEach(color => {
+    const swatch = document.createElement("div");
+    swatch.className = "swatch";
 
-        enterButton.disabled = true;
-        enterButton.textContent = "CROSSING THE FRACTURE...";
-        statusText.textContent = "Crossing the fracture";
+    const block = document.createElement("div");
+    block.className = "swatch-color";
+    block.style.background = color;
 
-        if (reduceMotion) {
-          openNexus();
-          return;
-        }
+    const code = document.createElement("div");
+    code.className = "swatch-code";
+    code.textContent = color.toUpperCase();
 
-        currentFrame = 1;
+    swatch.append(block, code);
+    container.appendChild(swatch);
+  });
 
-        function advance() {
-          if (currentFrame >= TOTAL_FRAMES) {
-            animationTimer = setTimeout(openNexus, 900);
-            return;
-          }
+  $("paletteMessage").textContent = "A new palette has grown.";
+}
 
-          currentFrame += 1;
-          showFrame(currentFrame);
+$("generatePalette").addEventListener("click", growPalette);
 
-          // Slightly cinematic but still quick enough for mobile.
-          animationTimer = setTimeout(advance, 110);
-        }
+$("copyPalette").addEventListener("click", async () => {
+  const value = palette.join("\n");
 
-        // Begin moving through the sequence.
-        advance();
-      }
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(value);
+    } else {
+      const field = document.createElement("textarea");
+      field.value = value;
+      field.style.position = "fixed";
+      field.style.opacity = "0";
+      document.body.appendChild(field);
+      field.select();
+      const copied = document.execCommand("copy");
+      field.remove();
+      if (!copied) throw new Error("Copy unavailable");
+    }
+    $("paletteMessage").textContent = "HEX palette copied.";
+  } catch (_) {
+    $("paletteMessage").textContent = "Copy was blocked. You can still read the HEX codes above.";
+  }
+});
 
-      enterButton.addEventListener("click", playOpening);
-      skipButton.addEventListener("click", openNexus);
+// MEMORY ARCHIVE
+function readMemories() {
+  try {
+    const value = JSON.parse(localStorage.getItem("elsewhere-memories") || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch (_) {
+    return [];
+  }
+}
 
-      document.querySelectorAll("[data-destination]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const target = button.dataset.destination;
+function persistMemories() {
+  try {
+    localStorage.setItem("elsewhere-memories", JSON.stringify(memories));
+    return true;
+  } catch (_) {
+    $("memoryMessage").textContent = "Save failed. Browser storage may be full or disabled.";
+    return false;
+  }
+}
 
-          document.querySelectorAll(".tool-panel").forEach((panel) => {
-            panel.classList.remove("active");
-          });
+function newId() {
+  return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 9);
+}
 
-          document.getElementById(target).classList.add("active");
+function resetMemoryForm() {
+  editingId = null;
+  $("memoryForm").reset();
+  $("saveMemory").textContent = "Preserve memory";
+  $("cancelEdit").hidden = true;
+}
 
-          document.getElementById(target).scrollIntoView({
-            behavior: reduceMotion ? "auto" : "smooth",
-            block: "start"
-          });
-        });
-      });
+function renderMemories() {
+  const list = $("memoryList");
+  list.replaceChildren();
 
-      document.getElementById("returnNexus").addEventListener("click", () => {
-        document.querySelectorAll(".tool-panel").forEach((panel) => {
-          panel.classList.remove("active");
-        });
+  $("memoryCount").textContent =
+    memories.length + (memories.length === 1 ? " memory" : " memories");
 
-        nexus.scrollIntoView({
-          behavior: reduceMotion ? "auto" : "smooth",
-          block: "start"
-        });
-      });
-
-      // Living Garden: five random colors with clipboard export.
-      let palette = [];
-
-      function randomHex() {
-        return "#" + Math.floor(Math.random() * 16777216)
-          .toString(16).padStart(6, "0");
-      }
-
-      function generatePalette() {
-        palette = Array.from({ length: 5 }, randomHex);
-    
-        const container = document.getElementById("swatches");
-        container.innerHTML = "";
-
-        palette.forEach((color) => {
-          const swatch = document.createElement("button");
-          swatch.className = "swatch";
-          swatch.style.background = color;
-          swatch.title = color;
-          swatch.setAttribute("aria-label", "Copy color " + color);
-          swatch.addEventListener("click", async () => {
-            try {
-              await navigator.clipboard.writeText(color);
-              document.getElementById("paletteMessage").textContent =
-                "Copied " + color;
-            } catch {
-              document.getElementById("paletteMessage").textContent =
-                "Color: " + color;
-            }
-          });
-          container.appendChild(swatch);
-        });
-
-        document.getElementById("paletteMessage").textContent =
-          "Your new palette is ready.";
-      }
-
-      document.getElementById("generatePalette")
-        .addEventListener("click", generatePalette);
-
-      document.getElementById("copyPalette")
-        .addEventListener("click", async () => {
-          const message = document.getElementById("paletteMessage");
-          const colors = palette.join("\n");
-
-          try {
-            await navigator.clipboard.writeText(colors);
-            message.textContent = "Palette copied!";
-          } catch {
-            message.textContent = colors;
-          }
-        });
-
-      // Memory Archive: save memories locally.
-      const memoryTitle = document.getElementById("memoryTitle");
-      const memoryText = document.getElementById("memoryText");
-      const memoryList = document.getElementById("memoryList");
-      const memoryMessage = document.getElementById("memoryMessage");
-
-      let memories = [];
-
-      try {
-        memories = JSON.parse(
-          localStorage.getItem("elsewhere-memories") || "[]"
-        );
-        if (!Array.isArray(memories)) memories = [];
-      } catch {
-        memories = [];
-      }
-
-      function renderMemories() {
-        memoryList.innerHTML = "";
-
-        if (!memories.length) {
-          memoryList.textContent = "No memories preserved yet.";
-          return;
-        }
-
-        memories.forEach((memory, index) => {
-          const article = document.createElement("article");
-          article.style.cssText =
-            "margin-top:14px;padding:14px;border:1px solid #50416d";
-
-          const title = document.createElement("h4");
-          title.textContent = memory.title || "Untitled memory";
-
-          const body = document.createElement("p");
-          body.style.whiteSpace = "pre-wrap";
-          body.textContent = memory.text;
-
-          const date = document.createElement("small");
-          date.textContent = memory.date || "";
-
-          const edit = document.createElement("button");
-          edit.className = "small-button";
-          edit.textContent = "Edit";
-          edit.addEventListener("click", () => {
-            memoryTitle.value = memory.title;
-            memoryText.value = memory.text;
-            memories.splice(index, 1);
-            saveMemories();
-            renderMemories();
-            memoryMessage.textContent =
-              "Edit your memory, then preserve it again.";
-            memoryTitle.focus();
-          });
-
-          const remove = document.createElement("button");
-          remove.className = "small-button";
-          remove.textContent = "Delete";
-          remove.addEventListener("click", () => {
-            if (!confirm("Delete this memory?")) return;
-            memories.splice(index, 1);
-            saveMemories();
-            renderMemories();
-            memoryMessage.textContent = "Memory deleted.";
-          });
-
-          article.append(title, body, date, edit, remove);
-          memoryList.appendChild(article);
-        });
-      }
-
-      function saveMemories() {
-        try {
-          localStorage.setItem(
-            "elsewhere-memories",
-            JSON.stringify(memories)
-          );
-          return true;
-        } catch {
-          memoryMessage.textContent =
-            "Storage is full or unavailable. Export your memories if possible.";
-          return false;
-        }
-      }
-
-      document.getElementById("saveMemory")
-        .addEventListener("click", () => {
-          const title = memoryTitle.value.trim();
-          const text = memoryText.value.trim();
-
-          if (!title && !text) {
-            memoryMessage.textContent = "Write a title or memory first.";
-            return;
-          }
-
-          memories.unshift({
-            title: title || "Untitled memory",
-            text,
-            date: new Date().toLocaleString()
-          });
-
-          if (saveMemories()) {
-            memoryTitle.value = "";
-            memoryText.value = "";
-            memoryMessage.textContent = "Memory preserved.";
-            renderMemories();
-          }
-        });
-
-      document.getElementById("exportMemories")
-.addEventListener("click", () => {
-try {
-const savedData = localStorage.getItem("elsewhere-memories");
-const savedMemories = savedData ? JSON.parse(savedData) : memories;
-
-  if (!Array.isArray(savedMemories) || savedMemories.length === 0) {
-    memoryMessage.textContent = "No saved memories to export yet.";
+  if (!memories.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "No fragments preserved yet.";
+    list.appendChild(empty);
     return;
   }
 
-  const file = new Blob(
-    [JSON.stringify(savedMemories, null, 2)],
-    { type: "application/json;charset=utf-8" }
-  );
+  memories.forEach(memory => {
+    const card = document.createElement("article");
+    card.className = "memory-card";
 
-  const url = URL.createObjectURL(file);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "elsewhere-memories.json";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
+    const title = document.createElement("h3");
+    title.textContent = memory.title || "Untitled memory";
 
-  setTimeout(() => URL.revokeObjectURL(url), 1500);
-  memoryMessage.textContent = "Memory export prepared.";
-} catch (error) {
-  memoryMessage.textContent = "Export failed. Please try again.";
-}
+    const date = document.createElement("div");
+    date.className = "memory-date";
+    date.textContent = memory.date || "Timestamp unavailable";
 
-});
+    const body = document.createElement("div");
+    body.className = "memory-text";
+    body.textContent = memory.text || "";
 
-      // Experiment Chamber
-  const shape = document.getElementById("shape");
-  const shapeType = document.getElementById("shapeType");
-  const rotation = document.getElementById("rotation");
-  const shapeSize = document.getElementById("shapeSize");
-  const roundness = document.getElementById("roundness");
-  const shapeColor = document.getElementById("shapeColor");
+    const actions = document.createElement("div");
+    actions.className = "memory-actions";
 
-  function updateShape() {
-    const type = shapeType.value;
-
-    const shapes = {
-      square: "none",
-      circle: "none",
-      triangle: "polygon(50% 0%, 0% 100%, 100% 100%)",
-      diamond: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
-      pentagon: "polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)",
-      star: "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 71%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)"
-    };
-
-    shape.style.transform = "rotate(" + rotation.value + "deg)";
-    shape.style.width = shapeSize.value + "px";
-    shape.style.height = shapeSize.value + "px";
-    shape.style.borderRadius =
-      type === "circle" ? "50%" :
-      type === "square" ? roundness.value + "%" : "0%";
-    shape.style.clipPath = shapes[type] || "none";
-    shape.style.background =
-      "linear-gradient(135deg, " + shapeColor.value + ", #67e8f9)";
-  }
-
-  [rotation, shapeSize, roundness, shapeColor].forEach((control) => {
-    control.addEventListener("input", updateShape);
-    control.addEventListener("change", updateShape);
-  });
-
-  shapeType.addEventListener("change", updateShape);
-
-  document.getElementById("resetShape")
-    .addEventListener("click", () => {
-      shapeType.value = "square";
-      rotation.value = 30;
-      shapeSize.value = 80;
-      roundness.value = 0;
-      shapeColor.value = "#8b5cf6";
-      updateShape();
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.className = "btn small";
+    edit.textContent = "Edit";
+    edit.addEventListener("click", () => {
+      editingId = memory.id;
+      $("memoryTitle").value = memory.title || "";
+      $("memoryText").value = memory.text || "";
+      $("saveMemory").textContent = "Update memory";
+      $("cancelEdit").hidden = false;
+      $("memoryMessage").textContent = "Editing this memory.";
+      $("memoryForm").scrollIntoView({behavior: "smooth", block: "start"});
     });
 
-  // Prepare the opening and initialize the tools.
-  generatePalette();
-  renderMemories();
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "btn small";
+    del.textContent = "Delete";
+    del.addEventListener("click", () => {
+      if (!confirm("Delete this memory? This cannot be undone unless you have a backup.")) return;
+      memories = memories.filter(item => item.id !== memory.id);
+      if (persistMemories()) {
+        renderMemories();
+        $("memoryMessage").textContent = "Memory removed.";
+        if (editingId === memory.id) resetMemoryForm();
+      }
+    });
+
+  actions.append(edit, del);
+    card.append(title, date, body, actions);
+    list.appendChild(card);
+  });
+}
+
+$("memoryForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const title = $("memoryTitle").value.trim() || "Untitled memory";
+  const text = $("memoryText").value.trim();
+
+  if (!text) {
+    $("memoryMessage").textContent = "Write something before preserving it.";
+    return;
+  }
+
+  if (editingId) {
+    const item = memories.find(entry => entry.id === editingId);
+    if (item) {
+      item.title = title;
+      item.text = text;
+      item.updated = new Date().toLocaleString();
+    }
+  } else {
+    memories.unshift({
+      id: newId(),
+      title,
+      text,
+      date: new Date().toLocaleString()
+    });
+  }
+
+if (persistMemories()) {
+    resetMemoryForm();
+    $("memoryMessage").textContent = "Memory preserved on this device.";
+    renderMemories();
+  }
+});
+
+$("cancelEdit").addEventListener("click", () => {
+  resetMemoryForm();
+  $("memoryMessage").textContent = "Edit cancelled.";
+});
+
+$("exportMemories").addEventListener("click", () => {
+  try {
+    const stored = JSON.parse(localStorage.getItem("elsewhere-memories") || "[]");
+    const data = Array.isArray(stored) ? stored : memories;
+
+    if (!data.length) {
+      $("memoryMessage").textContent = "No saved memories to export yet.";
+      return;
+    }
+
+    const blob = new Blob(
+      [JSON.stringify(data, null, 2)],
+      {type: "application/json;charset=utf-8"}
+    );
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "elsewhere-memories-" + new Date().toISOString().slice(0, 10) + ".json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    $("memoryMessage").textContent = "JSON backup prepared.";
+  } catch (_) {
+    $("memoryMessage").textContent = "Export failed. Please try again.";
+  }
+});
+
+$("importMemoriesButton").addEventListener("click", () => {
+  $("importMemoriesFile").click();
+});
+
+$("importMemoriesFile").addEventListener("change", async event => {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  try {
+    const parsed = JSON.parse(await file.text());
+    if (!Array.isArray(parsed)) throw new Error("Invalid backup");
+
+    const valid = parsed
+      .filter(item => item && typeof item.text === "string")
+      .map(item => ({
+        id: item.id || newId(),
+        title: typeof item.title === "string" ? item.title : "Untitled memory",
+        text: item.text,
+        date: item.date || new Date().toLocaleString(),
+        ...(item.updated ? {updated: item.updated} : {})
+      }));
+
+    if (!valid.length) throw new Error("No valid memories");
+
+    const ids = new Set(memories.map(item => item.id));
+    const additions = valid.filter(item => !ids.has(item.id));
+
+    memories = additions.concat(memories);
+
+    if (persistMemories()) {
+      renderMemories();
+      $("memoryMessage").textContent = additions.length + " memories restored.";
+    }
+  } catch (_) {
+    $("memoryMessage").textContent = "Could not restore this file. Choose a valid ELSEWHERE JSON backup.";
+  } finally {
+    event.target.value = "";
+  }
+});
+
+// EXPERIMENT CHAMBER
+const shape = $("shape");
+const shapeType = $("shapeType");
+const rotation = $("rotation");
+const shapeSize = $("shapeSize");
+const roundness = $("roundness");
+const shapeColor = $("shapeColor");
+
+ function updateShape() {
+  const type = shapeType.value;
+
+  const shapes = {
+    square: "none",
+    circle: "none",
+    triangle: "polygon(50% 0%, 0% 100%, 100% 100%)",
+    diamond: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
+    pentagon: "polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)",
+    star: "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 71%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)"
+  };
+
+  shape.style.transform = "rotate(" + rotation.value + "deg)";
+  shape.style.width = shapeSize.value + "px";
+  shape.style.height = shapeSize.value + "px";
+  shape.style.borderRadius =
+    type === "circle" ? "50%" :
+    type === "square" ? roundness.value + "%" : "0%";
+  shape.style.clipPath = shapes[type] || "none";
+  shape.style.background =
+    "linear-gradient(135deg," + shapeColor.value + ",#67e8f9)";
+  shape.style.boxShadow = "0 0 28px " + shapeColor.value + "99";
+
+  $("rotationValue").textContent = rotation.value + "°";
+  $("sizeValue").textContent = shapeSize.value + " px";
+  $("roundnessValue").textContent = roundness.value + "%";
+  roundness.disabled = type !== "square";
+}
+
+[rotation, shapeSize, roundness, shapeColor].forEach(control => {
+  control.addEventListener("input", updateShape);
+  control.addEventListener("change", updateShape);
+});
+
+shapeType.addEventListener("change", updateShape);
+
+$("resetShape").addEventListener("click", () => {
+  shapeType.value = "square";
+  rotation.value = 30;
+  shapeSize.value = 80;
+  roundness.value = 0;
+  shapeColor.value = "#8b5cf6";
   updateShape();
-  prepareOpening();
+});
+
+// INITIALIZE THE SITE
+growPalette();
+renderMemories();
+updateShape();
+playIntro();
+
+})();
+</script>
+</body>
+</html>
