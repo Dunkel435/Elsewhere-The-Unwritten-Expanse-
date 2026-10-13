@@ -950,19 +950,36 @@
         });
 
       document.getElementById("exportMemories")
-        .addEventListener("click", () => {
-          const file = new Blob(
-            [JSON.stringify(memories, null, 2)],
-            { type: "application/json" }
-          );
-          const url = URL.createObjectURL(file);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = "elsewhere-memories.json";
-          link.click();
-          setTimeout(() => URL.revokeObjectURL(url), 1000);
-          memoryMessage.textContent = "Memory export prepared.";
-        });
+.addEventListener("click", () => {
+try {
+const savedData = localStorage.getItem("elsewhere-memories");
+const savedMemories = savedData ? JSON.parse(savedData) : memories;
+
+  if (!Array.isArray(savedMemories) || savedMemories.length === 0) {
+    memoryMessage.textContent = "No saved memories to export yet.";
+    return;
+  }
+
+  const file = new Blob(
+    [JSON.stringify(savedMemories, null, 2)],
+    { type: "application/json;charset=utf-8" }
+  );
+
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "elsewhere-memories.json";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  memoryMessage.textContent = "Memory export prepared.";
+} catch (error) {
+  memoryMessage.textContent = "Export failed. Please try again.";
+}
+
+});
 
       // Experiment Chamber: update the shape live.
       const shape = document.getElementById("shape");
