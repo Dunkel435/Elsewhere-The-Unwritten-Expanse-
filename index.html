@@ -981,46 +981,56 @@ const savedMemories = savedData ? JSON.parse(savedData) : memories;
 
 });
 
-      // Experiment Chamber: update the shape live.
-      const shape = document.getElementById("shape");
-      const rotation = document.getElementById("rotation");
-      const shapeSize = document.getElementById("shapeSize");
-      const roundness = document.getElementById("roundness");
-      const shapeColor = document.getElementById("shapeColor");
+      // Experiment Chamber
+  const shape = document.getElementById("shape");
+  const shapeType = document.getElementById("shapeType");
+  const rotation = document.getElementById("rotation");
+  const shapeSize = document.getElementById("shapeSize");
+  const roundness = document.getElementById("roundness");
+  const shapeColor = document.getElementById("shapeColor");
 
-      function updateShape() {
-        shape.style.transform = "rotate(" + rotation.value + "deg)";
-        shape.style.width = shapeSize.value + "px";
-        shape.style.height = shapeSize.value + "px";
-        shape.style.borderRadius = roundness.value + "%";
-        shape.style.background =
-          "linear-gradient(135deg, " +
-          shapeColor.value +
-          ", #67e8f9)";
-      }
+  function updateShape() {
+    const type = shapeType.value;
 
-      [rotation, shapeSize, roundness, shapeColor].forEach((control) => {
-        control.addEventListener("input", updateShape);
-        control.addEventListener("change", updateShape);
-      });
+    const shapes = {
+      square: "none",
+      circle: "none",
+      triangle: "polygon(50% 0%, 0% 100%, 100% 100%)",
+      diamond: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
+      pentagon: "polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)",
+      star: "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 71%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)"
+    };
 
-      document.getElementById("resetShape")
-        .addEventListener("click", () => {
-          rotation.value = 30;
-          shapeSize.value = 80;
-          roundness.value = 0;
-          shapeColor.value = "#8b5cf6";
-          updateShape();
-        });
+    shape.style.transform = "rotate(" + rotation.value + "deg)";
+    shape.style.width = shapeSize.value + "px";
+    shape.style.height = shapeSize.value + "px";
+    shape.style.borderRadius =
+      type === "circle" ? "50%" :
+      type === "square" ? roundness.value + "%" : "0%";
+    shape.style.clipPath = shapes[type] || "none";
+    shape.style.background =
+      "linear-gradient(135deg, " + shapeColor.value + ", #67e8f9)";
+  }
 
-      // Prepare the opening and initialize the tools.
-      generatePalette();
-      renderMemories();
+  [rotation, shapeSize, roundness, shapeColor].forEach((control) => {
+    control.addEventListener("input", updateShape);
+    control.addEventListener("change", updateShape);
+  });
+
+  shapeType.addEventListener("change", updateShape);
+
+  document.getElementById("resetShape")
+    .addEventListener("click", () => {
+      shapeType.value = "square";
+      rotation.value = 30;
+      shapeSize.value = 80;
+      roundness.value = 0;
+      shapeColor.value = "#8b5cf6";
       updateShape();
-      prepareOpening();
+    });
 
-    })();
-  </script>
-</body>
-</html>
-
+  // Prepare the opening and initialize the tools.
+  generatePalette();
+  renderMemories();
+  updateShape();
+  prepareOpening();
