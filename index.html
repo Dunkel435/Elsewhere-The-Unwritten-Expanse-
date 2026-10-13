@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -799,3 +798,211 @@
       function generatePalette() {
         palette = Array.from({ length: 5 }, randomHex);
     
+        const container = document.getElementById("swatches");
+        container.innerHTML = "";
+
+        palette.forEach((color) => {
+          const swatch = document.createElement("button");
+          swatch.className = "swatch";
+          swatch.style.background = color;
+          swatch.title = color;
+          swatch.setAttribute("aria-label", "Copy color " + color);
+          swatch.addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(color);
+              document.getElementById("paletteMessage").textContent =
+                "Copied " + color;
+            } catch {
+              document.getElementById("paletteMessage").textContent =
+                "Color: " + color;
+            }
+          });
+          container.appendChild(swatch);
+        });
+
+        document.getElementById("paletteMessage").textContent =
+          "Your new palette is ready.";
+      }
+
+      document.getElementById("generatePalette")
+        .addEventListener("click", generatePalette);
+
+      document.getElementById("copyPalette")
+        .addEventListener("click", async () => {
+          const message = document.getElementById("paletteMessage");
+          const colors = palette.join("\n");
+
+          try {
+            await navigator.clipboard.writeText(colors);
+            message.textContent = "Palette copied!";
+          } catch {
+            message.textContent = colors;
+          }
+        });
+
+      // Memory Archive: save memories locally.
+      const memoryTitle = document.getElementById("memoryTitle");
+      const memoryText = document.getElementById("memoryText");
+      const memoryList = document.getElementById("memoryList");
+      const memoryMessage = document.getElementById("memoryMessage");
+
+      let memories = [];
+
+      try {
+        memories = JSON.parse(
+          localStorage.getItem("elsewhere-memories") || "[]"
+        );
+        if (!Array.isArray(memories)) memories = [];
+      } catch {
+        memories = [];
+      }
+
+      function renderMemories() {
+        memoryList.innerHTML = "";
+
+        if (!memories.length) {
+          memoryList.textContent = "No memories preserved yet.";
+          return;
+        }
+
+        memories.forEach((memory, index) => {
+          const article = document.createElement("article");
+          article.style.cssText =
+            "margin-top:14px;padding:14px;border:1px solid #50416d";
+
+          const title = document.createElement("h4");
+          title.textContent = memory.title || "Untitled memory";
+
+          const body = document.createElement("p");
+          body.style.whiteSpace = "pre-wrap";
+          body.textContent = memory.text;
+
+          const date = document.createElement("small");
+          date.textContent = memory.date || "";
+
+          const edit = document.createElement("button");
+          edit.className = "small-button";
+          edit.textContent = "Edit";
+          edit.addEventListener("click", () => {
+            memoryTitle.value = memory.title;
+            memoryText.value = memory.text;
+            memories.splice(index, 1);
+            saveMemories();
+            renderMemories();
+            memoryMessage.textContent =
+              "Edit your memory, then preserve it again.";
+            memoryTitle.focus();
+          });
+
+          const remove = document.createElement("button");
+          remove.className = "small-button";
+          remove.textContent = "Delete";
+          remove.addEventListener("click", () => {
+            if (!confirm("Delete this memory?")) return;
+            memories.splice(index, 1);
+            saveMemories();
+            renderMemories();
+            memoryMessage.textContent = "Memory deleted.";
+          });
+
+          article.append(title, body, date, edit, remove);
+          memoryList.appendChild(article);
+        });
+      }
+
+      function saveMemories() {
+        try {
+          localStorage.setItem(
+            "elsewhere-memories",
+            JSON.stringify(memories)
+          );
+          return true;
+        } catch {
+          memoryMessage.textContent =
+            "Storage is full or unavailable. Export your memories if possible.";
+          return false;
+        }
+      }
+
+      document.getElementById("saveMemory")
+        .addEventListener("click", () => {
+          const title = memoryTitle.value.trim();
+          const text = memoryText.value.trim();
+
+          if (!title && !text) {
+            memoryMessage.textContent = "Write a title or memory first.";
+            return;
+          }
+
+          memories.unshift({
+            title: title || "Untitled memory",
+            text,
+            date: new Date().toLocaleString()
+          });
+
+          if (saveMemories()) {
+            memoryTitle.value = "";
+            memoryText.value = "";
+            memoryMessage.textContent = "Memory preserved.";
+            renderMemories();
+          }
+        });
+
+      document.getElementById("exportMemories")
+        .addEventListener("click", () => {
+          const file = new Blob(
+            [JSON.stringify(memories, null, 2)],
+            { type: "application/json" }
+          );
+          const url = URL.createObjectURL(file);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "elsewhere-memories.json";
+          link.click();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          memoryMessage.textContent = "Memory export prepared.";
+        });
+
+      // Experiment Chamber: update the shape live.
+      const shape = document.getElementById("shape");
+      const rotation = document.getElementById("rotation");
+      const shapeSize = document.getElementById("shapeSize");
+      const roundness = document.getElementById("roundness");
+      const shapeColor = document.getElementById("shapeColor");
+
+      function updateShape() {
+        shape.style.transform = "rotate(" + rotation.value + "deg)";
+        shape.style.width = shapeSize.value + "px";
+        shape.style.height = shapeSize.value + "px";
+        shape.style.borderRadius = roundness.value + "%";
+        shape.style.background =
+          "linear-gradient(135deg, " +
+          shapeColor.value +
+          ", #67e8f9)";
+      }
+
+      [rotation, shapeSize, roundness, shapeColor].forEach((control) => {
+        control.addEventListener("input", updateShape);
+        control.addEventListener("change", updateShape);
+      });
+
+      document.getElementById("resetShape")
+        .addEventListener("click", () => {
+          rotation.value = 30;
+          shapeSize.value = 80;
+          roundness.value = 0;
+          shapeColor.value = "#8b5cf6";
+          updateShape();
+        });
+
+      // Prepare the opening and initialize the tools.
+      generatePalette();
+      renderMemories();
+      updateShape();
+      prepareOpening();
+
+    })();
+  </script>
+</body>
+</html>
+
