@@ -1,1 +1,801 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080611">
+  <meta name="description" content="ELSEWHERE — The Unwritten Expanse. Enter a surreal universe of impossible architecture, hidden worlds, and creative experiments.">
+  <title>ELSEWHERE — The Unwritten Expanse</title>
+
+  <style>
+    :root {
+      --bg: #080611;
+      --purple: #a78bfa;
+      --cyan: #76e7ff;
+      --gold: #f5d49b;
+      --text: #f8f5ff;
+      --muted: #c0b8d6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+    }
+
+    button, a {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 5px;
+    }
+
+    .scene {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 50% 45%, #332050 0%, transparent 48%),
+        #080611;
+    }
+
+    .scene-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0;
+      transform: scale(1.035);
+      transition: opacity 0.8s ease, transform 8s linear;
+      will-change: opacity, transform;
+    }
+
+    .scene-image.visible {
+      opacity: 1;
+      transform: scale(1.09);
+    }
+
+    .scene::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(5,4,14,.22), transparent 28%,
+          rgba(5,4,14,.08) 55%, rgba(5,4,14,.88)),
+        linear-gradient(90deg, rgba(5,4,14,.36), transparent 65%);
+    }
+
+    .scene.fallback {
+      background:
+        radial-gradient(circle at 50% 45%,
+          rgba(143,87,255,.42), transparent 17%),
+        radial-gradient(ellipse at 50% 50%,
+          #30204f 0%, #111027 40%, #080611 78%);
+    }
+
+    .topbar {
+      position: absolute;
+      z-index: 3;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px clamp(18px, 5vw, 68px);
+    }
+
+    .brand {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .28em;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #e4d9ff;
+      font-size: 10px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 12px var(--cyan);
+    }
+
+    .screen {
+      position: relative;
+      z-index: 2;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 100px 22px 80px;
+      text-align: center;
+    }
+
+    .intro {
+      width: min(780px, 100%);
+      animation: reveal 1.2s both;
+    }
+
+    .eyebrow {
+      margin: 0 0 23px;
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(48px, 11vw, 112px);
+      line-height: .98;
+      font-weight: 500;
+      letter-spacing: .10em;
+      text-shadow: 0 0 42px rgba(178,131,255,.35);
+    }
+
+    .subtitle {
+      margin: 25px auto 0;
+      max-width: 550px;
+      color: #eee6ff;
+      font-size: clamp(15px, 2.5vw, 21px);
+      line-height: 1.7;
+    }
+
+    .description {
+      max-width: 440px;
+      margin: 18px auto 30px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.9;
+    }
+
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      min-height: 54px;
+      padding: 0 29px;
+      border: 1px solid rgba(211,191,255,.7);
+      border-radius: 2px;
+      background: rgba(92,65,142,.3);
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .18em;
+      cursor: pointer;
+      transition: background .25s, box-shadow .25s, transform .25s;
+    }
+
+    .primary-button:hover {
+      background: rgba(139,92,246,.42);
+      box-shadow: 0 0 34px rgba(167,139,250,.22);
+      transform: translateY(-2px);
+    }
+
+    .skip-button {
+      position: absolute;
+      z-index: 4;
+      right: clamp(18px, 5vw, 68px);
+      bottom: 28px;
+      padding: 10px 0;
+      border: 0;
+      background: transparent;
+      color: #ddd4f4;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .skip-button:hover {
+      color: white;
+    }
+
+    .bottom-note {
+      position: absolute;
+      bottom: 31px;
+      left: 22px;
+      color: #b7aaca;
+      font-size: 10px;
+      letter-spacing: .12em;
+    }
+
+    .nexus {
+      position: relative;
+      z-index: 2;
+      display: none;
+      min-height: 100svh;
+      padding: 125px clamp(20px, 6vw, 84px) 65px;
+      animation: reveal 1s both;
+    }
+
+    .nexus.active {
+      display: block;
+    }
+
+    .nexus-heading {
+      max-width: 680px;
+      margin: 0 auto 46px;
+      text-align: center;
+    }
+
+    .nexus-heading h2 {
+      margin: 0;
+      font-size: clamp(36px, 7vw, 70px);
+      font-weight: 500;
+      letter-spacing: .04em;
+    }
+
+    .nexus-heading p:last-child {
+      color: #d4c9e8;
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .destinations {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .destination {
+      position: relative;
+      min-height: 245px;
+      padding: 27px 24px;
+      overflow: hidden;
+      text-align: left;
+      border: 1px solid rgba(202,181,255,.25);
+      border-radius: 4px;
+      background: linear-gradient(145deg,
+        rgba(56,42,84,.77), rgba(11,9,26,.82));
+      cursor: pointer;
+      transition: transform .25s, border-color .25s,
+        background .25s;
+    }
+
+    .destination:hover {
+      transform: translateY(-5px);
+      border-color: rgba(118,231,255,.65);
+      background: linear-gradient(145deg,
+        rgba(75,51,112,.9), rgba(11,9,26,.9));
+    }
+
+    .destination .number {
+      color: var(--cyan);
+      font-size: 10px;
+      letter-spacing: .18em;
+    }
+
+    .destination h3 {
+      margin: 46px 0 12px;
+      font-size: 23px;
+      font-weight: 500;
+    }
+
+    .destination p {
+      color: #c9bfdc;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .destination .arrow {
+      position: absolute;
+      right: 23px;
+      bottom: 22px;
+      color: var(--gold);
+      font-size: 21px;
+    }
+
+    .nexus-footer {
+      margin-top: 35px;
+      color: #a99cbe;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .tool-panel {
+      display: none;
+      max-width: 740px;
+      margin: 30px auto 0;
+      padding: 28px;
+      border: 1px solid rgba(202,181,255,.3);
+      background: rgba(9,7,22,.94);
+      border-radius: 4px;
+    }
+
+    .tool-panel.active {
+      display: block;
+      animation: reveal .4s both;
+    }
+
+    .tool-panel h3 {
+      margin-top: 0;
+      font-size: 26px;
+      font-weight: 500;
+    }
+
+    .tool-panel p {
+      color: #c9bfdc;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .tool-panel input,
+    .tool-panel textarea,
+    .tool-panel select {
+      width: 100%;
+      margin: 7px 0 14px;
+      padding: 12px;
+      border: 1px solid #50416d;
+      border-radius: 3px;
+      background: #151125;
+      color: white;
+      font: inherit;
+    }
+
+    .tool-panel textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .tool-panel label {
+      color: #e8dfff;
+      font-size: 12px;
+    }
+
+    .swatches {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 9px;
+      margin: 20px 0;
+    }
+
+    .swatch {
+      height: 78px;
+      border-radius: 3px;
+      border: 1px solid rgba(255,255,255,.22);
+    }
+
+    .small-button {
+      margin: 5px 7px 5px 0;
+      padding: 11px 15px;
+      border: 1px solid #756297;
+      border-radius: 3px;
+      background: #241a39;
+      color: white;
+      cursor: pointer;
+    }
+
+    .small-button:hover {
+      background: #40305e;
+    }
+
+    .playground {
+      height: 220px;
+      margin: 20px 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid #3b2c55;
+      background: radial-gradient(circle, #292047, #090713);
+    }
+
+    .shape {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #8b5cf6, #67e8f9);
+      box-shadow: 0 0 45px rgba(139,92,246,.6);
+      transform: rotate(30deg);
+      transition: transform .2s, border-radius .2s, background .2s;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 760px) {
+      .topbar {
+        padding: 20px;
+      }
+
+      .brand {
+        font-size: 10px;
+        letter-spacing: .19em;
+      }
+
+      .status {
+        font-size: 9px;
+        letter-spacing: .08em;
+      }
+
+      .screen {
+        padding-top: 110px;
+        padding-bottom: 90px;
+      }
+
+      .scene-image {
+        object-position: center;
+      }
+
+      .destinations {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .destination {
+        min-height: 185px;
+        padding: 22px;
+      }
+
+      .destination h3 {
+        margin-top: 26px;
+      }
+
+      .nexus {
+        padding: 110px 18px 45px;
+      }
+
+      .nexus-heading {
+        margin-bottom: 28px;
+      }
+
+      .bottom-note {
+        bottom: 18px;
+        font-size: 9px;
+      }
+
+      .skip-button {
+        bottom: 15px;
+      }
+
+      .tool-panel {
+        padding: 20px;
+      }
+
+      .swatches {
+        gap: 5px;
+      }
+
+      .swatch {
+        height: 58px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="scene fallback" id="scene" aria-hidden="true">
+    <img class="scene-image" id="frameA" alt="">
+    <img class="scene-image" id="frameB" alt="">
+  </div>
+
+  <header class="topbar">
+    <div class="brand">ELSEWHERE <span style="color:#a78bfa">/</span> THE UNWRITTEN EXPANSE</div>
+    <div class="status">
+      <span class="status-dot"></span>
+      <span id="statusText">Awaiting arrival</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="screen" id="arrival">
+      <div class="intro">
+        <p class="eyebrow">A place outside reality</p>
+        <h1>ELSEWHERE</h1>
+        <p class="subtitle">Somewhere between what exists and what could exist.</p>
+        <p class="description">
+          You were not supposed to find this place.
+          Beyond the fracture, another universe is waiting
+          to be discovered.
+        </p>
+        <button class="primary-button" id="enterButton">
+          ENTER ELSEWHERE <span aria-hidden="true">↗</span>
+        </button>
+      </div>
+      <div class="bottom-note">A NEW WORLD IS WAITING</div>
+      <button class="skip-button" id="skipButton">Skip intro ↗</button>
+    </section>
+
+    <section class="nexus" id="nexus">
+      <div class="nexus-heading">
+        <p class="eyebrow">The first breach is open</p>
+        <h2>The Nexus</h2>
+        <p>
+          The universe remembers how to exist.
+          Choose a path, awaken a creation, and leave
+          something of yourself in the unknown.
+        </p>
+      </div>
+
+      <div class="destinations">
+        <button class="destination" data-destination="garden">
+          <span class="number">01 / CREATION</span>
+          <h3>The Living Garden</h3>
+          <p>Discover colors, create palettes, and shape
+            new visual worlds.</p>
+          <span class="arrow">↗</span>
+        </button>
+
+        <button class="destination" data-destination="archive">
+          <span class="number">02 / MEMORY</span>
+          <h3>The Memory Archive</h3>
+          <p>Preserve thoughts, record discoveries, and
+            collect fragments of your journey.</p>
+          <span class="arrow">↗</span>
+        </button>
+
+        <button class="destination" data-destination="chamber">
+          <span class="number">03 / EXPERIMENT</span>
+          <h3>The Experiment Chamber</h3>
+          <p>Manipulate shapes, color, rotation, and
+            motion in a creative playground.</p>
+          <span class="arrow">↗</span>
+        </button>
+      </div>
+
+      <section class="tool-panel" id="garden">
+        <h3>The Living Garden</h3>
+        <p>Generate a five-color palette and copy its HEX values.</p>
+        <div class="swatches" id="swatches"></div>
+        <button class="small-button" id="generatePalette">Grow new colors</button>
+        <button class="small-button" id="copyPalette">Copy HEX palette</button>
+        <p id="paletteMessage" aria-live="polite"></p>
+      </section>
+
+      <section class="tool-panel" id="archive">
+        <h3>The Memory Archive</h3>
+        <p>Your notes are stored in this browser on this device.</p>
+        <label for="memoryTitle">Memory title</label>
+        <input id="memoryTitle" maxlength="100" placeholder="A fragment worth keeping">
+        <label for="memoryText">Your memory</label>
+        <textarea id="memoryText" maxlength="5000" placeholder="Write what you discovered..."></textarea>
+        <button class="small-button" id="saveMemory">Preserve memory</button>
+        <button class="small-button" id="exportMemories">Export memories</button>
+        <div id="memoryList"></div>
+        <p id="memoryMessage" aria-live="polite"></p>
+      </section>
+
+      <section class="tool-panel" id="chamber">
+        <h3>The Experiment Chamber</h3>
+        <p>Change the geometry of a living digital object.</p>
+
+        <div class="playground">
+          <div class="shape" id="shape"></div>
+        </div>
+
+        <label for="rotation">Rotation</label>
+        <input type="range" id="rotation" min="0" max="360" value="30">
+
+        <label for="shapeSize">Size</label>
+        <input type="range" id="shapeSize" min="35" max="150" value="80">
+
+        <label for="roundness">Roundness</label>
+        <input type="range" id="roundness" min="0" max="50" value="0">
+
+        <label for="shapeColor">Energy color</label>
+        <input type="color" id="shapeColor" value="#8b5cf6">
+
+        <button class="small-button" id="resetShape">Reset experiment</button>
+      </section>
+
+      <div class="nexus-footer">
+        <button class="small-button" id="returnNexus">Return to Nexus</button>
+        <p>ELSEWHERE — The Unwritten Expanse</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      // All frames live beside index.html in the repository.
+      const TOTAL_FRAMES = 60;
+      const FRAME_PATH = "frame_";
+      const FRAME_EXT = ".jpg";
+
+      const scene = document.getElementById("scene");
+      const frameA = document.getElementById("frameA");
+      const frameB = document.getElementById("frameB");
+      const arrival = document.getElementById("arrival");
+      const nexus = document.getElementById("nexus");
+      const statusText = document.getElementById("statusText");
+      const enterButton = document.getElementById("enterButton");
+      const skipButton = document.getElementById("skipButton");
+
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      let currentFrame = 1;
+      let activeImage = frameA;
+      let animationTimer = null;
+      let entering = false;
+
+      function frameName(number) {
+        return FRAME_PATH +
+          String(number).padStart(3, "0") +
+          FRAME_EXT;
+      }
+
+      // Preload frames progressively to avoid downloading all images at once.
+      function preloadFrame(number) {
+        return new Promise((resolve) => {
+          const image = new Image();
+          image.onload = () => resolve(image);
+          image.onerror = () => resolve(null);
+          image.src = frameName(number);
+        });
+      }
+
+      async function prepareOpening() {
+        const first = await preloadFrame(1);
+        if (!first) return;
+
+        frameA.src = first.src;
+        frameA.classList.add("visible");
+        scene.classList.remove("fallback");
+
+        // Load the next few frames in the background.
+        for (let i = 2; i <= 5; i++) {
+          preloadFrame(i);
+        }
+      }
+
+      function showFrame(number) {
+        const next = activeImage === frameA ? frameB : frameA;
+        const url = frameName(number);
+
+        next.onload = () => {
+          next.classList.add("visible");
+          activeImage.classList.remove("visible");
+          activeImage = next;
+        };
+
+        next.onerror = () => {
+          // A missing frame does not stop the cinematic sequence.
+          if (number < TOTAL_FRAMES) showFrame(number + 1);
+          else openNexus();
+        };
+
+        next.src = url;
+      }
+
+      function stopAnimation() {
+        if (animationTimer) clearTimeout(animationTimer);
+        animationTimer = null;
+      }
+
+      function openNexus() {
+        stopAnimation();
+        arrival.classList.add("hidden");
+        nexus.classList.add("active");
+        statusText.textContent = "Nexus awakened";
+        skipButton.classList.add("hidden");
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }
+
+      function playOpening() {
+        if (entering) return;
+        entering = true;
+        stopAnimation();
+
+        enterButton.disabled = true;
+        enterButton.textContent = "CROSSING THE FRACTURE...";
+        statusText.textContent = "Crossing the fracture";
+
+        if (reduceMotion) {
+          openNexus();
+          return;
+        }
+
+        currentFrame = 1;
+
+        function advance() {
+          if (currentFrame >= TOTAL_FRAMES) {
+            animationTimer = setTimeout(openNexus, 900);
+            return;
+          }
+
+          currentFrame += 1;
+          showFrame(currentFrame);
+
+          // Slightly cinematic but still quick enough for mobile.
+          animationTimer = setTimeout(advance, 110);
+        }
+
+        // Begin moving through the sequence.
+        advance();
+      }
+
+      enterButton.addEventListener("click", playOpening);
+      skipButton.addEventListener("click", openNexus);
+
+      document.querySelectorAll("[data-destination]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const target = button.dataset.destination;
+
+          document.querySelectorAll(".tool-panel").forEach((panel) => {
+            panel.classList.remove("active");
+          });
+
+          document.getElementById(target).classList.add("active");
+
+          document.getElementById(target).scrollIntoView({
+            behavior: reduceMotion ? "auto" : "smooth",
+            block: "start"
+          });
+        });
+      });
+
+      document.getElementById("returnNexus").addEventListener("click", () => {
+        document.querySelectorAll(".tool-panel").forEach((panel) => {
+          panel.classList.remove("active");
+        });
+
+        nexus.scrollIntoView({
+          behavior: reduceMotion ? "auto" : "smooth",
+          block: "start"
+        });
+      });
+
+      // Living Garden: five random colors with clipboard export.
+      let palette = [];
+
+      function randomHex() {
+        return "#" + Math.floor(Math.random() * 16777216)
+          .toString(16).padStart(6, "0");
+      }
+
+      function generatePalette() {
+        palette = Array.from({ length: 5 }, randomHex);
+    
