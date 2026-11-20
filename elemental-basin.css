@@ -1,0 +1,237 @@
+
+:root {
+  color-scheme: dark;
+  --bg: #090815;
+  --panel: rgba(20,18,42,.94);
+  --text: #f6f3ff;
+  --muted: #b9b3d8;
+  --purple: #9b6dff;
+  --cyan: #67e8f9;
+  --border: rgba(190,164,255,.24);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+  background:
+    radial-gradient(ellipse at 15% 10%,rgba(100,55,190,.25),transparent 40%),
+    radial-gradient(ellipse at 85% 80%,rgba(26,174,202,.12),transparent 35%),
+    var(--bg);
+}
+
+button, input { font: inherit; }
+button { cursor: pointer; }
+
+.basin {
+  width: min(1050px,100%);
+  margin: auto;
+  padding: 22px 16px 35px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 850;
+  letter-spacing: .13em;
+}
+
+.brand span { color: var(--cyan); }
+
+.back, .action {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 14px;
+  color: var(--text);
+  text-decoration: none;
+  background: rgba(255,255,255,.05);
+  font-size: .9rem;
+}
+
+.intro {
+  text-align: center;
+  padding: 38px 0 25px;
+}
+
+.eyebrow {
+  color: var(--cyan);
+  letter-spacing: .2em;
+  font-size: .72rem;
+  font-weight: 750;
+}
+
+h1 {
+  font-size: clamp(2.3rem,8vw,4.5rem);
+  letter-spacing: -.055em;
+  line-height: 1;
+  margin: 12px 0;
+}
+
+.intro > p:last-child {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.simulation {
+  display: grid;
+  grid-template-columns: minmax(0,1.4fr) minmax(260px,.8fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.canvas-wrap {
+  position: relative;
+  min-height: 390px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 19px;
+  background: #070711;
+  box-shadow: 0 20px 65px rgba(0,0,0,.4);
+  touch-action: none;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 390px;
+  image-rendering: pixelated;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.canvas-label {
+  position: absolute;
+  top: 13px;
+  left: 14px;
+  pointer-events: none;
+  color: rgba(255,255,255,.45);
+  font-size: .65rem;
+  letter-spacing: .16em;
+}
+
+.controls {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 19px;
+  background: var(--panel);
+}
+
+.control-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.control-heading h2 {
+  font-size: 1.2rem;
+  margin: 5px 0 18px;
+}
+
+#status {
+  font-size: .63rem;
+  color: var(--cyan);
+  white-space: nowrap;
+}
+
+.materials {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 9px;
+}
+
+.material {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 45px;
+  padding: 10px;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: rgba(255,255,255,.035);
+  text-align: left;
+}
+
+.material.selected {
+  border-color: var(--cyan);
+  background: rgba(103,232,249,.12);
+  box-shadow: 0 0 16px rgba(103,232,249,.08);
+}
+
+.material span { font-size: .88rem; }
+
+.field { margin: 23px 0; }
+.field label {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: .88rem;
+  margin-bottom: 10px;
+}
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--purple);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.action {
+  flex: 1;
+  min-width: 95px;
+}
+
+.action.primary {
+  color: #090815;
+  font-weight: 800;
+  border: 0;
+  background: linear-gradient(110deg,#b79aff,#67e8f9);
+}
+
+#message {
+  min-height: 40px;
+  color: var(--muted);
+  font-size: .8rem;
+  line-height: 1.5;
+  margin-top: 18px;
+}
+
+footer {
+  color: #827c9e;
+  font-size: .75rem;
+  text-align: center;
+  letter-spacing: .13em;
+  margin-top: 30px;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+@media(max-width:700px) {
+  .simulation { grid-template-columns: 1fr; }
+  .canvas-wrap { min-height: 350px; }
+  canvas { min-height: 350px; }
+  .intro { padding-top: 32px; }
+  .controls { padding: 17px; }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after { transition: none !important; }
+}
