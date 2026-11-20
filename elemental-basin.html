@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090815">
+<title>The Elemental Basin — ELSEWHERE</title>
+<link rel="stylesheet" href="elemental-basin.css">
+</head>
+<body>
+<main class="basin">
+  <header class="topbar">
+    <a class="brand" href="index.html">ELSEWHERE <span>✦</span></a>
+    <a class="back" href="index.html">← Return to Nexus</a>
+  </header>
+
+  <section class="intro">
+    <p class="eyebrow">DESTINATION 04 · THE LIVING ELEMENTS</p>
+    <h1>The Elemental Basin</h1>
+    <p>Draw upon the elements. Watch a world take shape.</p>
+  </section>
+
+  <section class="simulation">
+    <div class="canvas-wrap">
+      <canvas id="world" aria-label="Interactive elemental simulation"></canvas>
+      <div class="canvas-label">THE UNWRITTEN WORLD</div>
+    </div>
+
+    <div class="controls">
+      <div class="control-heading">
+        <div>
+          <p class="eyebrow">MATERIALS</p>
+          <h2>Choose your element</h2>
+        </div>
+        <span id="status">WORLD ACTIVE</span>
+      </div>
+
+      <div class="materials" id="materials">
+        <button class="material selected" data-material="sand">🟡 <span>Sand</span></button>
+        <button class="material" data-material="water">💧 <span>Water</span></button>
+        <button class="material" data-material="stone">🪨 <span>Stone</span></button>
+        <button class="material" data-material="fire">🔥 <span>Fire</span></button>
+        <button class="material" data-material="plant">🌱 <span>Plant</span></button>
+        <button class="material" data-material="erase">✦ <span>Eraser</span></button>
+      </div>
+
+      <div class="field">
+        <label for="brush">Brush size <span id="brushValue">4</span></label>
+        <input id="brush" type="range" min="1" max="12" value="4">
+      </div>
+
+      <div class="actions">
+        <button id="pause" class="action primary">Ⅱ Pause</button>
+        <button id="clear" class="action">Clear world</button>
+        <button id="reset" class="action">Reset</button>
+      </div>
+
+      <p id="message" aria-live="polite">Choose a material and touch or drag across the world.</p>
+    </div>
+  </section>
+
+  <footer>ELSEWHERE · THE UNWRITTEN EXPANSE</footer>
+</main>
+
+<script src="elemental-basin.js"></script>
+</body>
+</html>
